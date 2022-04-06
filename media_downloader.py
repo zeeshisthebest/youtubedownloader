@@ -15,7 +15,8 @@ class DownloadingWindow:
         self.t1 = sf(self.path, self.format)
 
         t2 = threading.Thread(target=self.download_each)
-        t2.start()
+        if t2.start():
+            dl.Success("Downloaded All", "Download completed!")
 
     def select_stream_type(self, media):
         if self.format == "video":
@@ -32,10 +33,12 @@ class DownloadingWindow:
                 self.t1.set_info(media.title, media.length)
             except VideoUnavailable:
                 dl.Success("Error", f"Unable to download {link}")
+                return False
             except Exception:
                 dl.Success("Error", "The link is not correct")
+                return False
             else:
                 # self.select_stream_type(media).first().download(self.path)
                 self.select_stream_type(media).get_highest_resolution().download(self.path)
         self.t1.destroy()
-        dl.Success("Downloaded All", "Download completed!")
+        return True
